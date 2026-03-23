@@ -255,16 +255,65 @@
       color: var(--text-dim);
       transition: all 0.2s;
     }
-    .platform-tab.active {
-      background: var(--surface);
-      color: var(--text);
-      border-bottom: 1px solid var(--surface);
+    .platform-tab.active[data-platform="mac"] {
+      background: #2d2d2d;
+      color: #f0f0f0;
+      border-color: #2d2d2d;
+      border-bottom: 1px solid #2d2d2d;
+    }
+    .platform-tab.active[data-platform="win"] {
+      background: #012456;
+      color: #f0f0f0;
+      border-color: #012456;
+      border-bottom: 1px solid #012456;
     }
     .platform-tab:hover:not(.active) {
       color: var(--text);
     }
     .platform-content { display: none; }
     .platform-content.active { display: block; }
+
+    #platform-mac .copy-wrap pre {
+      background: #2d2d2d;
+      border-color: #3a3a3a;
+    }
+    #platform-mac .copy-wrap pre code {
+      color: #e0e0e0;
+    }
+    #platform-mac .copy-btn {
+      background: #3a3a3a;
+      border-color: #555;
+      color: #aaa;
+    }
+    #platform-mac .copy-btn:hover {
+      color: #fff;
+      border-color: #888;
+    }
+    #platform-mac .copy-btn.copied {
+      color: #58d68d;
+      border-color: #58d68d;
+    }
+
+    #platform-win .copy-wrap pre {
+      background: #012456;
+      border-color: #1b3a6b;
+    }
+    #platform-win .copy-wrap pre code {
+      color: #e8e8e8;
+    }
+    #platform-win .copy-btn {
+      background: #1b3a6b;
+      border-color: #2a5599;
+      color: #8cb4e0;
+    }
+    #platform-win .copy-btn:hover {
+      color: #fff;
+      border-color: #5b9bd5;
+    }
+    #platform-win .copy-btn.copied {
+      color: #58d68d;
+      border-color: #58d68d;
+    }
 
     .copy-wrap {
       position: relative;
@@ -314,8 +363,8 @@
     <p>One command to install. The binary goes to <code>~/.local/bin/m365</code> (macOS/Linux) or <code>%LOCALAPPDATA%\m365-cli\m365.exe</code> (Windows).</p>
 
     <div class="platform-tabs">
-      <button class="platform-tab active" onclick="switchPlatform('mac')">macOS / Linux</button>
-      <button class="platform-tab" onclick="switchPlatform('win')">Windows</button>
+      <button class="platform-tab active" data-platform="mac" onclick="switchPlatform('mac')">macOS / Linux</button>
+      <button class="platform-tab" data-platform="win" onclick="switchPlatform('win')">Windows</button>
     </div>
     <div id="platform-mac" class="platform-content active">
       <div class="copy-wrap">
