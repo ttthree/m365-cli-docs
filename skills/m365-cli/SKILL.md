@@ -16,11 +16,11 @@ m365 <service> <action> [key=value ...] [--json]
 
 **Always use `--json` for programmatic access.** Parse the JSON output to extract data.
 
-Use `m365 <service> <action> --help` for detailed parameter info on any action.
+Use `m365 <service> <action> --help` for detailed parameter info on any listed action.
 
 ## Services & Actions
 
-### teams — Microsoft Teams (24 actions)
+### teams — Microsoft Teams (23 listed actions + 1 hidden compatibility action)
 | Action | Parameters | Description |
 |--------|-----------|-------------|
 | `list-teams` | **userId** (GUID, required) | List Teams the user belongs to |
@@ -41,12 +41,14 @@ Use `m365 <service> <action> --help` for detailed parameter info on any action.
 | `update-chat` | **chatId** (required), topic | Update chat properties |
 | `list-chat-members` | **chatId** (required) | List members of a chat |
 | `add-chat-member` | **chatId**, **userId** (required) | Add a member to a chat |
-| `list-chat-messages` | **chatId** (required), top, filter, orderby | List messages in a chat |
+| `list-chat-messages-all` | **chatId**, **range** (required, e.g. 2h/7d/30m) | Fetch all messages in a chat within a time range (handles pagination automatically) |
 | `get-chat-message` | **chatId**, **messageId** (required) | Get a specific chat message |
 | `post-message` | **chatId**, **content** (required) | Send a message to a chat |
 | `update-chat-message` | **chatId**, **messageId**, **content** (required) | Update a chat message |
 | `send-message-to-self` | **content** (required), contentType | Send a message to yourself |
 | `search-teams-messages` | **message** (required), conversationId | Natural language search across Teams messages |
+
+`list-chat-messages` remains functional for compatibility but is intentionally hidden from help/docs. Prefer `list-chat-messages-all`.
 
 ### mail — Outlook Mail (21 actions)
 | Action | Parameters | Description |
@@ -160,7 +162,7 @@ m365 teams post-message chatId="<chat_id-from-fav>" content="Hey!" --json
 ```bash
 m365 fav get project-alpha --json
 # → Returns chat_id, then:
-m365 teams list-chat-messages chatId="<chat_id>" top=20 --json
+m365 teams list-chat-messages-all chatId="<chat_id>" range=2h --json
 ```
 
 #### Post to a favorite channel
@@ -193,9 +195,8 @@ Summarize messages from a specific chat/person or across all favorites.
 # 1. Get the chat_id from favorites
 m365 fav get <alias> --json
 
-# 2. Fetch messages with time-window filter (chat supports OData $filter)
-m365 teams list-chat-messages chatId="<chat_id>" top=50 \
-  filter="lastModifiedDateTime gt 2026-03-21T00:00:00Z" --json
+# 2. Fetch all messages within a time range (handles pagination automatically)
+m365 teams list-chat-messages-all chatId="<chat_id>" range=2h --json
 
 # 3. Summarize the returned messages
 ```
@@ -206,9 +207,8 @@ m365 teams list-chat-messages chatId="<chat_id>" top=50 \
 m365 fav list --json
 # Filter for type=chat and type=channel entries
 
-# 2. For each favorite CHAT — use filter for time window
-m365 teams list-chat-messages chatId="<chat_id>" top=50 \
-  filter="lastModifiedDateTime gt <start-time>Z" --json
+# 2. For each favorite CHAT — fetch all messages in time range
+m365 teams list-chat-messages-all chatId="<chat_id>" range=2h --json
 
 # 3. For each favorite CHANNEL — fetch messages then filter locally
 #    NOTE: Channel messages do NOT support $filter. Fetch with top= and
@@ -306,8 +306,8 @@ m365 mail send-email-with-attachments to='["user@contoso.com"]' \
 - **Stdin support**: pipe JSON via `--stdin` for complex payloads
 - **Parameter names are camelCase** — match exactly as shown (e.g. `userUpns`, `chatId`, `startDateTime`)
 - If a command fails with "Not logged in", run `m365 login` first
-- Use `m365 <service> <action> --help` to see detailed parameters for any action
-- Use `m365 <service> --help` to see all available actions for a service
+- Use `m365 <service> <action> --help` to see detailed parameters for any listed action
+- Use `m365 <service> --help` to see the visible actions for a service
 
 ## Error Handling
 
