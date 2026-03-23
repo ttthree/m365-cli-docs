@@ -272,7 +272,7 @@
     <h1 id="m365-cli">M365 CLI</h1>
     <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 200; margin-bottom: 2rem;">Updated Mar 23, 2026</p>
 
-    <div class="callout"><strong>Internal tool.</strong> M365 CLI gives you command-line access to Microsoft 365 services — Teams, Outlook Mail, Calendar, OneDrive, SharePoint, Planner, and more. Built in Rust, connects via MCP protocol to Microsoft Graph. 109 actions across 10 services, all from your terminal.</div>
+    <div class="callout"><strong>Internal tool.</strong> M365 CLI gives you command-line access to Microsoft 365 services — Teams, Outlook Mail, Calendar, OneDrive &amp; SharePoint Files, and User Profile. Built in Rust, connects via MCP protocol to Microsoft Graph. 80 actions across 5 services, all from your terminal.</div>
 
     <p class="intro">Install in 30 seconds, authenticate once, then access all of M365 from the command line. Works standalone or as an AI skill for Claude Code / Eureka.</p>
 
@@ -318,7 +318,7 @@ m365 status    # Verify you're logged in</code></pre>
     <!-- SERVICES -->
     <h2 id="services">Services</h2>
 
-    <p>10 services, 109 actions. Each service maps to a Microsoft Graph API surface.</p>
+    <p>5 services, 80 actions. Each service maps to a Microsoft Graph API surface.</p>
 
     <table>
       <thead>
@@ -326,15 +326,10 @@ m365 status    # Verify you're logged in</code></pre>
       </thead>
       <tbody>
         <tr><td><code>me</code></td><td>5</td><td>User profile, manager, direct reports</td></tr>
-        <tr><td><code>teams</code></td><td>27</td><td>Chats, channels, messages, members</td></tr>
+        <tr><td><code>teams</code></td><td>24</td><td>Chats, channels, messages, members</td></tr>
         <tr><td><code>mail</code></td><td>21</td><td>Search, read, compose, reply, forward, attachments</td></tr>
         <tr><td><code>calendar</code></td><td>13</td><td>Events, scheduling, rooms, timezone</td></tr>
-        <tr><td><code>planner</code></td><td>20</td><td>Plans, tasks, buckets, goals</td></tr>
-        <tr><td><code>sharepoint</code></td><td>13</td><td>Sites, lists, list items, columns</td></tr>
         <tr><td><code>files</code></td><td>17</td><td>OneDrive &amp; SharePoint file operations</td></tr>
-        <tr><td><code>word</code></td><td>4</td><td>Create documents, comments</td></tr>
-        <tr><td><code>excel</code></td><td>4</td><td>Create workbooks, comments</td></tr>
-        <tr><td><code>copilot</code></td><td>1</td><td>Chat with M365 Copilot</td></tr>
       </tbody>
     </table>
 
@@ -422,7 +417,7 @@ m365 fav sync</code></pre>
     <!-- CLAUDE CODE SKILL -->
     <h2 id="skill">Using as a Claude Code skill</h2>
 
-    <p>The M365 CLI comes with a skill file (<code>SKILL.md</code>) that gives Claude full knowledge of all 109 commands, parameters, and common workflows. This turns Claude into an M365 operator — it can send messages, search emails, schedule meetings, and manage files on your behalf.</p>
+    <p>The M365 CLI comes with a skill file (<code>SKILL.md</code>) that gives Claude full knowledge of all 80 commands, parameters, and common workflows. This turns Claude into an M365 operator — it can send messages, search emails, schedule meetings, and manage files on your behalf.</p>
 
     <ol class="steps">
       <li>
