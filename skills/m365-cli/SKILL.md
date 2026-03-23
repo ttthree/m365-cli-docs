@@ -56,7 +56,7 @@ Use `m365 <service> <action> --help` for detailed parameter info on any action.
 | `create-draft-message` | **subject**, **body**, **toRecipients** (required) | Create a draft email |
 | `update-draft` | **messageId** (required) | Update a draft email |
 | `send-draft-message` | **id** (required) | Send a draft email |
-| `send-email-with-attachments` | **subject**, **body**, **toRecipients** (required) | Send email with attachments |
+| `send-email-with-attachments` | **subject**, **body**, **toRecipients** (required), localFiles, directAttachments, attachmentUris | Send email with attachments |
 | `delete-message` | **id** (required) | Delete an email |
 | `update-message` | **id** (required) | Update email properties |
 | `flag-email` | **messageId**, **flagStatus** (required), mailboxAddress | Flag an email for follow-up |
@@ -277,6 +277,25 @@ m365 files read-small-text-file documentLibraryId="<drive-id>" fileId="<file-id>
 # (find-site does NOT return personal OneDrive)
 m365 files find-file-or-folder searchQuery="<any-file>" --json
 # → parentReference.driveId in results = your OneDrive documentLibraryId
+```
+
+## Email Attachments
+
+`send-email-with-attachments` supports three attachment methods:
+
+| Parameter | Use For | Example |
+|-----------|---------|---------|
+| `localFiles` | **Local files** (recommended) — auto-reads and base64-encodes | `localFiles='["/path/to/report.pptx"]'` |
+| `directAttachments` | Inline base64 content (PascalCase keys) | `directAttachments='[{"FileName":"doc.txt","ContentBase64":"SGVsbG8=","ContentType":"text/plain"}]'` |
+| `attachmentUris` | M365 file URIs (OneDrive/SharePoint) | `attachmentUris='["https://..."]'` |
+
+**Use `localFiles` for local file attachments** — it handles base64 encoding and MIME type detection automatically. Max ~3.7MB per file (base64 expands to ~5MB limit).
+
+```bash
+# Send with a local file attachment
+m365 mail send-email-with-attachments to='["user@contoso.com"]' \
+  subject="Report" body="See attached" \
+  localFiles='["/path/to/report.pptx"]' --json
 ```
 
 ## Important Notes
