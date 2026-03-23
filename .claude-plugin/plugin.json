@@ -1,0 +1,10 @@
+{
+  "name": "m365-cli",
+  "description": "Microsoft 365 CLI skill — gives Claude full knowledge of 109 M365 commands for Teams, Mail, Calendar, Files, and more.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ttthree"
+  },
+  "keywords": ["microsoft", "m365", "teams", "outlook", "calendar", "onedrive", "sharepoint"],
+  "skills": "./skills/"
+}

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M365 CLI — Command-line access to Microsoft 365</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;300;400&family=DM+Mono:wght@400&display=swap');
+
+    :root {
+      --bg: #faf9f7;
+      --text: #2c2a28;
+      --text-dim: #8a8580;
+      --text-light: #b0aaa4;
+      --accent: #0078d4;
+      --accent-hover: #005a9e;
+      --border: #e8e4e0;
+      --surface: #f2f0ed;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 6vh 2rem 8vh;
+      opacity: 0;
+      animation: fadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-weight: 200;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 0.3em;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+      margin-top: 1.2em;
+    }
+
+    .intro {
+      font-weight: 300;
+      font-size: clamp(0.88rem, 1.3vw, 0.95rem);
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 3rem 0 1.5rem;
+    }
+
+    h3 {
+      font-weight: 400;
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin: 2.5rem 0 0.6rem;
+    }
+
+    p {
+      font-weight: 300;
+      font-size: clamp(0.88rem, 1.3vw, 0.95rem);
+      color: var(--text);
+      margin-bottom: 0.8em;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.3s ease; }
+    a:hover { color: var(--accent-hover); }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85em;
+      background: var(--surface);
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: var(--surface);
+      padding: 1.2em 1.4em;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1em 0 1.5em;
+      border: 1px solid var(--border);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .callout {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      padding: 1em 1.4em;
+      border-radius: 4px;
+      margin: 0 0 2rem;
+      font-weight: 300;
+      font-size: clamp(0.84rem, 1.2vw, 0.92rem);
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .callout strong { color: var(--text); }
+
+    .link-out {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px;
+      transition: all 0.3s ease;
+    }
+    .link-out:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0 1.5em;
+      font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+    }
+
+    th {
+      font-weight: 400;
+      text-align: left;
+      padding: 0.6em 0.8em;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    td {
+      font-weight: 300;
+      padding: 0.6em 0.8em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    ul, ol {
+      font-weight: 300;
+      font-size: clamp(0.88rem, 1.3vw, 0.95rem);
+      margin: 0.5em 0 1.2em 1.5em;
+      color: var(--text);
+    }
+
+    li { margin-bottom: 0.4em; }
+
+    .diagram {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text-dim);
+      background: var(--surface);
+      padding: 1.2em 1.4em;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin: 1em 0 1.5em;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .anchor { text-decoration: none; color: var(--text-light); margin-left: 0.3em; opacity: 0; transition: opacity 0.3s; font-weight: 200; }
+    h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor { opacity: 1; }
+    .anchor:hover { color: var(--accent); }
+
+    .badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.15em 0.5em;
+      border-radius: 3px;
+      background: var(--accent);
+      color: #fff;
+      letter-spacing: 0.04em;
+      vertical-align: middle;
+      margin-left: 0.4em;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      margin-left: 0;
+      padding-left: 0;
+    }
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 2.4em;
+      margin-bottom: 1.2em;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0.05em;
+      width: 1.6em;
+      height: 1.6em;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      text-align: center;
+      line-height: 1.6em;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--text-dim);
+    }
+
+    .platform-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: -1px;
+    }
+    .platform-tab {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.5em 1.2em;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+    .platform-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      border-bottom: 1px solid var(--surface);
+    }
+    .platform-tab:hover:not(.active) {
+      color: var(--text);
+    }
+    .platform-content { display: none; }
+    .platform-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 id="m365-cli">M365 CLI</h1>
+    <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 200; margin-bottom: 2rem;">Updated Mar 23, 2026</p>
+
+    <div class="callout"><strong>Internal tool.</strong> M365 CLI gives you command-line access to Microsoft 365 services — Teams, Outlook Mail, Calendar, OneDrive, SharePoint, Planner, and more. Built in Rust, connects via MCP protocol to Microsoft Graph. 109 actions across 10 services, all from your terminal.</div>
+
+    <p class="intro">Install in 30 seconds, authenticate once, then access all of M365 from the command line. Works standalone or as an AI skill for Claude Code / Eureka.</p>
+
+    <!-- INSTALL -->
+    <h2 id="install">Install</h2>
+
+    <p>One command to install. The binary goes to <code>~/.local/bin/m365</code> (macOS/Linux) or <code>%LOCALAPPDATA%\m365-cli\m365.exe</code> (Windows).</p>
+
+    <div class="platform-tabs">
+      <button class="platform-tab active" onclick="switchPlatform('mac')">macOS / Linux</button>
+      <button class="platform-tab" onclick="switchPlatform('win')">Windows</button>
+    </div>
+    <div id="platform-mac" class="platform-content active">
+      <pre><code>curl -fsSL https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.sh | bash</code></pre>
+    </div>
+    <div id="platform-win" class="platform-content">
+      <pre><code>irm https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.ps1 | iex</code></pre>
+    </div>
+
+    <h3 id="login">Login</h3>
+
+    <p>After installing, sign in with your Microsoft Entra ID account:</p>
+
+    <pre><code>m365 login     # Opens browser for Microsoft Entra ID sign-in
+m365 status    # Verify you're logged in</code></pre>
+
+    <p>Tokens are stored locally with restricted file permissions. The CLI auto-refreshes expired tokens — you only need to log in once.</p>
+
+    <!-- USAGE -->
+    <h2 id="usage">Usage</h2>
+
+    <p>Every command follows the same pattern:</p>
+
+    <pre><code>m365 &lt;service&gt; &lt;action&gt; [key=value ...] [--json]</code></pre>
+
+    <ul>
+      <li>Arguments are <code>key=value</code> pairs — no <code>--</code> prefix</li>
+      <li>JSON arrays use single quotes: <code>attendees='["user@example.com"]'</code></li>
+      <li>Use <code>--json</code> for structured output (recommended for scripts and agents)</li>
+      <li>Use <code>--help</code> on any service or action for parameter details</li>
+    </ul>
+
+    <!-- SERVICES -->
+    <h2 id="services">Services</h2>
+
+    <p>10 services, 109 actions. Each service maps to a Microsoft Graph API surface.</p>
+
+    <table>
+      <thead>
+        <tr><th>Service</th><th>Actions</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>me</code></td><td>5</td><td>User profile, manager, direct reports</td></tr>
+        <tr><td><code>teams</code></td><td>27</td><td>Chats, channels, messages, members</td></tr>
+        <tr><td><code>mail</code></td><td>21</td><td>Search, read, compose, reply, forward, attachments</td></tr>
+        <tr><td><code>calendar</code></td><td>13</td><td>Events, scheduling, rooms, timezone</td></tr>
+        <tr><td><code>planner</code></td><td>20</td><td>Plans, tasks, buckets, goals</td></tr>
+        <tr><td><code>sharepoint</code></td><td>13</td><td>Sites, lists, list items, columns</td></tr>
+        <tr><td><code>files</code></td><td>17</td><td>OneDrive &amp; SharePoint file operations</td></tr>
+        <tr><td><code>word</code></td><td>4</td><td>Create documents, comments</td></tr>
+        <tr><td><code>excel</code></td><td>4</td><td>Create workbooks, comments</td></tr>
+        <tr><td><code>copilot</code></td><td>1</td><td>Chat with M365 Copilot</td></tr>
+      </tbody>
+    </table>
+
+    <!-- EXAMPLES -->
+    <h2 id="examples">Quick examples</h2>
+
+    <h3 id="teams-messaging">Teams messaging</h3>
+    <pre><code># Send a message
+m365 teams post-message chatId="19:xxx@thread.v2" content="Hello!" --json
+
+# List recent messages in a chat
+m365 teams list-chat-messages chatId="19:xxx@thread.v2" top=20 --json
+
+# Search across all Teams messages
+m365 teams search-teams-messages message="hackathon planning" --json</code></pre>
+
+    <h3 id="email">Email</h3>
+    <pre><code># Search emails with natural language
+m365 mail search-messages message="quarterly review from manager" --json
+
+# Read a specific email
+m365 mail get-message id="AAMkADA..." --json
+
+# Send an email
+m365 mail send-email-with-attachments subject="Update" body="See attached" \
+  toRecipients='["user@contoso.com"]' --json</code></pre>
+
+    <h3 id="calendar">Calendar</h3>
+    <pre><code># Today's events
+m365 calendar list-events startDateTime=2026-03-23T00:00:00 \
+  endDateTime=2026-03-24T00:00:00 --json
+
+# Find a meeting time
+m365 calendar find-meeting-times attendees='["user@contoso.com"]' \
+  meetingDuration=PT30M --json</code></pre>
+
+    <h3 id="files">Files</h3>
+    <pre><code># Search for a file
+m365 files find-file-or-folder searchQuery="quarterly report" --json
+
+# Browse a SharePoint site
+m365 files find-site searchQuery="Marketing" --json
+m365 files list-document-libraries siteId="&lt;site-id&gt;" --json</code></pre>
+
+    <!-- FAVORITES -->
+    <h2 id="favorites">Favorites — the fast path</h2>
+
+    <p>The CLI has a local favorites store that caches frequently-used IDs for contacts, chats, channels, and sites. This eliminates multi-step ID lookups and turns 3-step operations into 1-step.</p>
+
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Stored Fields</th><th>Used For</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>contact</code></td><td>alias, upn, name, user_id, chat_id</td><td>Direct messaging, user lookup</td></tr>
+        <tr><td><code>chat</code></td><td>alias, chat_id, topic</td><td>Group chat access</td></tr>
+        <tr><td><code>channel</code></td><td>alias, team_id, channel_id</td><td>Channel messaging</td></tr>
+        <tr><td><code>site</code></td><td>alias, site_id, site_name</td><td>SharePoint file operations</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="favorites-workflow">Before and after</h3>
+
+    <div class="diagram">Without favorites (3 steps):
+  m365 me get-my-details → get userId
+  m365 teams create-chat chatType=oneOnOne members_upns='[...]' → get chatId
+  m365 teams post-message chatId=&lt;id&gt; content="Hey!"
+
+With favorites (1 step):
+  m365 fav get alex → chat_id already there
+  m365 teams post-message chatId=&lt;chat_id&gt; content="Hey!"</div>
+
+    <pre><code># List all favorites
+m365 fav list --json
+
+# Search by alias or name
+m365 fav get alex --json
+
+# Add a favorite
+m365 fav add contact alias=alex upn=alexw@contoso.com name="Alex Wang"
+
+# Sync favorites to OneDrive backup
+m365 fav sync</code></pre>
+
+    <!-- CLAUDE CODE SKILL -->
+    <h2 id="skill">Using as a Claude Code skill</h2>
+
+    <p>The M365 CLI comes with a skill file (<code>SKILL.md</code>) that gives Claude full knowledge of all 109 commands, parameters, and common workflows. This turns Claude into an M365 operator — it can send messages, search emails, schedule meetings, and manage files on your behalf.</p>
+
+    <ol class="steps">
+      <li>
+        <strong>Install the CLI</strong> — follow the <a href="#install">install steps</a> above.
+      </li>
+      <li>
+        <strong>Install the skill</strong> — use Claude Code's plugin system:
+        <pre><code>/plugin marketplace add ttthree/m365-cli-docs
+/plugin install m365-cli@m365-cli-docs</code></pre>
+        <p style="margin-top: 0.8em; font-size: 0.85rem; color: var(--text-dim);">Or manually download <code>SKILL.md</code>:</p>
+        <pre><code>mkdir -p .claude/skills/m365-cli
+curl -fsSL https://raw.githubusercontent.com/ttthree/m365-cli-docs/main/skills/m365-cli/SKILL.md \
+  -o .claude/skills/m365-cli/SKILL.md</code></pre>
+      </li>
+      <li>
+        <strong>Use it</strong> — Claude Code automatically discovers the skill. Just ask naturally:
+        <pre><code>&gt; Send a Teams message to Alex saying "meeting at 3pm"
+&gt; What emails did I get from my manager today?
+&gt; Schedule a 30-min meeting with the team tomorrow morning
+&gt; Summarize the last 20 messages in the Project Alpha chat</code></pre>
+      </li>
+    </ol>
+
+    <div class="callout"><strong>Favorites-first.</strong> The skill instructs Claude to always check <code>m365 fav get</code> before any operation that needs an ID. This means Claude resolves "send a message to Alex" in one step instead of three — no user ID lookup, no chat creation, just send.</div>
+
+    <!-- ARCHITECTURE -->
+    <h2 id="architecture">Architecture</h2>
+
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Language</td><td>Rust</td></tr>
+        <tr><td>Auth</td><td>OAuth 2.0 + PKCE via Microsoft Entra ID</td></tr>
+        <tr><td>Transport</td><td>MCP (Model Context Protocol) over SSE to Microsoft's MCP gateway</td></tr>
+        <tr><td>TLS</td><td>rustls (no OpenSSL dependency)</td></tr>
+        <tr><td>Token storage</td><td>File-based with restricted permissions</td></tr>
+        <tr><td>Platforms</td><td>macOS ARM64, Linux x64, Windows x64</td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram">┌──────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  m365 CLI    │────▶│  MCP Gateway     │────▶│  Microsoft Graph │
+│  (Rust)      │ SSE │  (Microsoft)     │     │  APIs            │
+└──────────────┘     └──────────────────┘     └──────────────────┘
+       │
+       ▼
+┌──────────────┐
+│  Favorites   │
+│  (local JSON)│
+└──────────────┘</div>
+
+    <!-- BUILDING FROM SOURCE -->
+    <h2 id="build">Building from source</h2>
+
+    <p>The source code is available in the private repository. Contact the maintainer for access.</p>
+    <pre><code>cargo build --release
+# Binary at target/release/m365</code></pre>
+
+    <!-- TROUBLESHOOTING -->
+    <h2 id="troubleshooting">Troubleshooting</h2>
+
+    <table>
+      <thead>
+        <tr><th>Error</th><th>Fix</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"Not logged in"</td><td>Run <code>m365 login</code></td></tr>
+        <tr><td>HTTP 401</td><td>Token expired — CLI auto-refreshes, but if persistent, run <code>m365 login</code></td></tr>
+        <tr><td>HTTP 403</td><td>Check that your account has the required M365 license</td></tr>
+        <tr><td>HTTP 504</td><td>Server timeout — retry or reduce results with <code>top</code> parameter</td></tr>
+        <tr><td>"Unknown action"</td><td>Run <code>m365 &lt;service&gt; --help</code></td></tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <script>
+    // Anchor links
+    document.querySelectorAll('h1, h2, h3, h4').forEach(function(h) {
+      if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/[^\w]+/g, '-').replace(/-$/, '');
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.className = 'anchor';
+      a.textContent = '#';
+      h.appendChild(a);
+    });
+
+    // Platform tabs
+    function switchPlatform(platform) {
+      document.querySelectorAll('.platform-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.platform-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('platform-' + platform).classList.add('active');
+    }
+  </script>
+
+  <!-- Ambient nebula effect (same style as Jorge Pereira's page) -->
+  <script>
+    (() => {
+      const PALETTE = [
+        [0, 120, 212],   // Microsoft blue
+        [0, 99, 177],    // darker blue
+        [16, 110, 190],  // mid blue
+        [0, 150, 214],   // light blue
+        [80, 40, 170],   // purple accent
+        [0, 90, 158],    // deep blue
+        [50, 130, 200],  // sky blue
+        [30, 60, 150],   // navy hint
+      ];
+
+      const canvas = document.createElement('canvas');
+      canvas.style.cssText =
+        'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none';
+      document.body.prepend(canvas);
+
+      const ctx = canvas.getContext('2d');
+      let W, H, cx, cy;
+
+      function measure() {
+        W = canvas.width = innerWidth;
+        H = canvas.height = innerHeight;
+        const h1 = document.querySelector('h1');
+        if (h1) {
+          const r = h1.getBoundingClientRect();
+          cx = r.left + r.width / 2;
+          cy = r.top + scrollY + r.height / 2;
+        } else {
+          cx = W / 2;
+          cy = H * 0.12;
+        }
+      }
+
+      class Wisp {
+        constructor() { this.reset(true); }
+
+        reset(init) {
+          this.x = cx + (Math.random() - 0.5) * Math.min(W * 0.5, 480);
+          this.y = cy + (Math.random() - 0.5) * 100;
+          this.radius = 70 + Math.random() * 150;
+          this.life = init ? Math.random() * 550 : 0;
+          this.maxLife = 420 + Math.random() * 480;
+          this.vx = (Math.random() - 0.5) * 0.13;
+          this.vy = (Math.random() - 0.5) * 0.04;
+          this.angle = Math.random() * Math.PI * 2;
+          this.aSpeed = 0.0014 + Math.random() * 0.0028;
+          this.color = PALETTE[(Math.random() * PALETTE.length) | 0];
+          this.baseA = 0.038 + Math.random() * 0.05;
+        }
+
+        update() {
+          if (++this.life > this.maxLife) { this.reset(false); return; }
+          this.angle += this.aSpeed;
+          this.x += this.vx + Math.sin(this.angle) * 0.15;
+          this.y += this.vy + Math.cos(this.angle * 0.7) * 0.055;
+          this.radius += 0.05;
+        }
+
+        draw() {
+          const p = this.life / this.maxLife;
+          let a = this.baseA;
+          if (p < 0.15) a *= p / 0.15;
+          else if (p > 0.6) a *= (1 - p) / 0.4;
+
+          const [r, g, b] = this.color;
+          const rad = this.radius;
+          const gr = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, rad);
+          gr.addColorStop(0,    `rgba(${r},${g},${b},${a * 2.4})`);
+          gr.addColorStop(0.25, `rgba(${r},${g},${b},${a * 1.4})`);
+          gr.addColorStop(0.6,  `rgba(${r},${g},${b},${a * 0.35})`);
+          gr.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+          ctx.fillStyle = gr;
+          ctx.fillRect(this.x - rad, this.y - rad, rad * 2, rad * 2);
+        }
+      }
+
+      measure();
+      addEventListener('resize', measure);
+
+      const wisps = Array.from({ length: 12 }, () => new Wisp());
+
+      (function render() {
+        const fade = Math.max(0, 1 - Math.max(0, scrollY - 40) / 240);
+
+        ctx.clearRect(0, 0, W, H);
+
+        if (fade > 0.002) {
+          ctx.globalAlpha = fade;
+          for (const w of wisps) { w.update(); w.draw(); }
+          ctx.globalAlpha = 1;
+        } else {
+          for (const w of wisps) w.update();
+        }
+
+        requestAnimationFrame(render);
+      })();
+    })();
+  </script>
+</body>
+</html>
