@@ -265,6 +265,36 @@
     }
     .platform-content { display: none; }
     .platform-content.active { display: block; }
+
+    .copy-wrap {
+      position: relative;
+    }
+    .copy-wrap pre {
+      padding-right: 3em;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.6em;
+      right: 0.6em;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.25em 0.5em;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      transition: all 0.2s;
+      line-height: 1;
+    }
+    .copy-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .copy-btn.copied {
+      color: #2ea043;
+      border-color: #2ea043;
+    }
   </style>
 </head>
 <body>
@@ -286,10 +316,16 @@
       <button class="platform-tab" onclick="switchPlatform('win')">Windows</button>
     </div>
     <div id="platform-mac" class="platform-content active">
-      <pre><code>curl -fsSL https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.sh | bash</code></pre>
+      <div class="copy-wrap">
+        <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+        <pre><code>curl -fsSL https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.sh | bash</code></pre>
+      </div>
     </div>
     <div id="platform-win" class="platform-content">
-      <pre><code>irm https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.ps1 | iex</code></pre>
+      <div class="copy-wrap">
+        <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+        <pre><code>irm https://stttthreeai024313688509.blob.core.windows.net/m365cli/install.ps1 | iex</code></pre>
+      </div>
     </div>
 
     <h3 id="login">Login</h3>
@@ -513,6 +549,16 @@ curl -fsSL https://raw.githubusercontent.com/ttthree/m365-cli-docs/main/skills/m
       document.querySelectorAll('.platform-content').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('platform-' + platform).classList.add('active');
+    }
+
+    // Copy button
+    function copyCmd(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+      });
     }
   </script>
 
