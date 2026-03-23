@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "m365-cli-docs",
+  "description": "Microsoft 365 CLI skill — gives Claude full knowledge of 109 M365 commands for Teams, Mail, Calendar, Files, and more.",
+  "owner": {
+    "name": "ttthree"
+  },
+  "plugins": [
+    {
+      "name": "m365-cli",
+      "description": "Microsoft 365 CLI skill — gives Claude full knowledge of 109 M365 commands for Teams, Mail, Calendar, Files, and more.",
+      "category": "productivity",
+      "source": ".",
+      "homepage": "https://ttthree.github.io/m365-cli-docs/"
+    }
+  ]
+}
