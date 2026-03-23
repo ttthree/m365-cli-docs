@@ -10,7 +10,11 @@
       "name": "m365-cli",
       "description": "Microsoft 365 CLI skill — gives Claude full knowledge of 109 M365 commands for Teams, Mail, Calendar, Files, and more.",
       "category": "productivity",
-      "source": ".",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/ttthree/m365-cli-docs.git",
+        "sha": "be5eb3a2b9914a8e2b167fe18c82035a4d96af12"
+      },
       "homepage": "https://ttthree.github.io/m365-cli-docs/"
     }
   ]
