@@ -92,9 +92,13 @@ Copy the skill file (this `SKILL.md`) into the agent's skill directory. The exac
 - **Eureka / Craft Agent** — Place in the workspace's `skills/m365-cli/SKILL.md`
 - **Other agents** — Consult the agent's documentation for where to place skill/instruction files
 
-### Step 6: Restart the agent session
+### Step 6: Ask the user to restart
 
-After installing the skill file, **start a new agent session** (or restart the current one). Most agents load skill files at session startup, so the new skill won't be available until the session is reloaded.
+After installing the CLI and the skill file, tell the user:
+
+> Please restart this agent session so the new m365-cli skill gets loaded. After restart, you'll be able to use M365 CLI commands for Teams, Mail, Calendar, and OneDrive/SharePoint directly.
+
+Most agents load skill files at startup, so the skill won't be available until the session (or the app) is restarted.
 
 After restart, `m365` should be on PATH. All commands in the rest of this document assume `m365` is available directly.
 
