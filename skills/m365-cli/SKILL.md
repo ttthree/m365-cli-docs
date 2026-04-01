@@ -98,7 +98,10 @@ Copy the skill file (this `SKILL.md`) into the agent's skill directory. The exac
 
 After installing the CLI and the skill file, tell the user:
 
-> Please restart the Eureka app so the new m365-cli skill gets loaded. After restart, you'll be able to use M365 CLI commands for Teams, Mail, Calendar, and OneDrive/SharePoint directly.
+> Please restart the Eureka app so the new m365-cli skill gets loaded. After restart, you'll be able to use M365 CLI commands for Teams, Mail, Calendar, and OneDrive/SharePoint directly. Try saying:
+> - "Say hi to Alex on Teams"
+> - "Schedule a 30min 1:1 with Sarah for 3PM tomorrow"
+> - "What emails did I get from my manager today?"
 
 Most agents load skill files at startup, so the skill won't be available until the app is restarted.
 
