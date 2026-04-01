@@ -1,3 +1,9 @@
+---
+name: "M365 CLI"
+description: "Microsoft 365 CLI for Teams, Mail, Calendar, and OneDrive/SharePoint operations via terminal"
+alwaysAllow: ["Bash"]
+---
+
 # m365-cli — Microsoft 365 CLI
 
 A command-line tool that gives AI agents direct access to Microsoft 365 services (Teams, Mail, Calendar, OneDrive/SharePoint) via the terminal.
