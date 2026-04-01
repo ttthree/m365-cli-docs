@@ -351,11 +351,11 @@
 <body>
   <div class="page">
     <h1 id="m365-cli">M365 CLI</h1>
-    <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 200; margin-bottom: 2rem;">Updated Mar 23, 2026</p>
+    <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 200; margin-bottom: 2rem;">Updated Apr 1, 2026</p>
 
     <div class="callout"><strong>Internal tool.</strong> M365 CLI gives you command-line access to Microsoft 365 services — Teams, Outlook Mail, Calendar, OneDrive &amp; SharePoint Files, and User Profile. Built in Rust, connects via MCP protocol to Microsoft Graph. 80 actions across 5 services, all from your terminal.</div>
 
-    <p class="intro">Install in 30 seconds, authenticate once, then access all of M365 from the command line. Works standalone or as an AI skill for Claude Code / Codex.</p>
+    <p class="intro">Install in 30 seconds, authenticate once, then access all of M365 from the command line. Works standalone or as an AI skill for Claude Code, Codex, and other AI agents.</p>
 
     <!-- INSTALL -->
     <h2 id="install">Install</h2>
@@ -501,34 +501,53 @@ m365 fav add contact alias=alex upn=alexw@contoso.com name="Alex Wang"
 # Sync favorites to OneDrive backup
 m365 fav sync</code></pre>
 
-    <!-- CLAUDE CODE SKILL -->
-    <h2 id="skill">Using as a Claude Code skill</h2>
+    <!-- AI AGENT SKILL -->
+    <h2 id="skill">Using as an AI agent skill</h2>
 
-    <p>The M365 CLI comes with a skill file (<code>SKILL.md</code>) that gives Claude full knowledge of all 80 commands, parameters, and common workflows. This turns Claude into an M365 operator — it can send messages, search emails, schedule meetings, and manage files on your behalf.</p>
+    <p>The M365 CLI comes with a skill file (<code>SKILL.md</code>) that gives AI agents full knowledge of all 80+ commands, parameters, and common workflows. The skill file is written for agents — it tells the agent how to install, authenticate, and use the CLI on the user's behalf.</p>
+
+    <h3 id="agent-setup">Agent setup workflow</h3>
+
+    <p>The skill file includes a 6-step setup workflow designed for AI agents to follow. Here's what happens when an agent sets up the CLI for the first time:</p>
 
     <ol class="steps">
       <li>
-        <strong>Install the CLI</strong> — follow the <a href="#install">install steps</a> above.
+        <strong>Run the installer</strong> — the agent launches the one-liner install script. On <strong>macOS</strong>, Gatekeeper may prompt the user to allow the binary. On <strong>Windows</strong>, a UAC elevation prompt appears (needed for Defender exclusion). The agent tells the user to approve any OS-level prompts.
       </li>
       <li>
-        <strong>Install the skill</strong> — use Claude Code's plugin system:
-        <pre><code>/plugin marketplace add ttthree/m365-cli-docs
-/plugin install m365-cli@m365-cli-docs</code></pre>
-        <p style="margin-top: 0.8em; font-size: 0.85rem; color: var(--text-dim);">Or manually download <code>SKILL.md</code>:</p>
-        <pre><code>mkdir -p .claude/skills/m365-cli
-curl -fsSL https://raw.githubusercontent.com/ttthree/m365-cli-docs/main/skills/m365-cli/SKILL.md \
-  -o .claude/skills/m365-cli/SKILL.md</code></pre>
+        <strong>Wait for user confirmation</strong> — the agent pauses and asks the user to confirm the installation completed. The installer may fail silently or need user action.
       </li>
       <li>
-        <strong>Use it</strong> — Claude Code automatically discovers the skill. Just ask naturally:
-        <pre><code>&gt; Send a Teams message to Alex saying "meeting at 3pm"
-&gt; What emails did I get from my manager today?
-&gt; Schedule a 30-min meeting with the team tomorrow morning
-&gt; Summarize the last 20 messages in the Project Alpha chat</code></pre>
+        <strong>Verify installation</strong> — the agent checks the binary exists at the expected path (<code>~/.local/bin/m365</code> on macOS/Linux, <code>%LOCALAPPDATA%\m365-cli\m365.exe</code> on Windows) and runs <code>m365 --help</code>.
+      </li>
+      <li>
+        <strong>Login</strong> — the agent runs <code>m365 login</code> using the <strong>absolute path</strong> to the binary (since PATH may not be updated in the current session). The user completes Microsoft Entra ID sign-in in the browser. The agent verifies with <code>m365 status</code>.
+      </li>
+      <li>
+        <strong>Install the skill file</strong> — the agent places <code>SKILL.md</code> in the appropriate skill directory for the platform:
+        <table style="margin-top: 0.8em;">
+          <tbody>
+            <tr><td><strong>Claude Code</strong></td><td><code>.claude/skills/m365-cli/SKILL.md</code> or <code>claude plugin add</code></td></tr>
+            <tr><td><strong>Eureka</strong></td><td><code>skills/m365-cli/SKILL.md</code> in the workspace</td></tr>
+            <tr><td><strong>Others</strong></td><td>Consult agent docs for skill directory location</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>
+        <strong>Restart the agent session</strong> — most agents load skill files at startup, so a new session is needed for the skill to take effect. After restart, <code>m365</code> should be on PATH.
       </li>
     </ol>
 
-    <div class="callout"><strong>Favorites-first.</strong> The skill instructs Claude to always check <code>m365 fav get</code> before any operation that needs an ID. This means Claude resolves "send a message to Alex" in one step instead of three — no user ID lookup, no chat creation, just send.</div>
+    <h3 id="agent-usage">Once set up</h3>
+
+    <p>After setup, the agent can handle M365 tasks naturally:</p>
+
+    <pre><code>&gt; Send a Teams message to Alex saying "meeting at 3pm"
+&gt; What emails did I get from my manager today?
+&gt; Schedule a 30-min meeting with the team tomorrow morning
+&gt; Summarize the last 20 messages in the Project Alpha chat</code></pre>
+
+    <div class="callout"><strong>Favorites-first.</strong> The skill instructs agents to always check <code>m365 fav get</code> before any operation that needs an ID. This means the agent resolves "send a message to Alex" in one step instead of three — no user ID lookup, no chat creation, just send.</div>
 
     <!-- ARCHITECTURE -->
     <h2 id="architecture">Architecture</h2>
