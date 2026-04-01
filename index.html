@@ -518,7 +518,7 @@ m365 fav sync</code></pre>
         <strong>Wait for user confirmation</strong> — the agent pauses and asks the user to confirm the installation completed. The installer may fail silently or need user action.
       </li>
       <li>
-        <strong>Verify installation</strong> — the agent checks the binary exists at the expected path (<code>~/.local/bin/m365</code> on macOS/Linux, <code>%LOCALAPPDATA%\m365-cli\m365.exe</code> on Windows) and runs <code>m365 --help</code>.
+        <strong>Verify installation</strong> — the agent checks the binary exists at the expected path (<code>~/.local/bin/m365</code> on macOS/Linux, <code>%LOCALAPPDATA%\m365-cli\m365.exe</code> on Windows) and runs <code>m365 --help</code>. On Windows, Defender may scan the binary before it becomes available — the agent retries a few times with short delays if not found immediately.
       </li>
       <li>
         <strong>Login</strong> — the agent runs <code>m365 login</code> using the <strong>absolute path</strong> to the binary (since PATH may not be updated in the current session). The user completes Microsoft Entra ID sign-in in the browser. The agent verifies with <code>m365 status</code>.

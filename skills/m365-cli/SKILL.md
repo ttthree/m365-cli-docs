@@ -51,6 +51,8 @@ test -f ~/.local/bin/m365 && echo "installed" || echo "not found"
 Test-Path "$env:LOCALAPPDATA\m365-cli\m365.exe"
 ```
 
+**If the binary is not found yet:** On Windows, Defender may scan the newly downloaded binary before it becomes available. Wait 5–10 seconds and check again — retry up to 3 times before reporting failure to the user.
+
 Also verify the binary is on PATH and functional:
 ```bash
 m365 --help
